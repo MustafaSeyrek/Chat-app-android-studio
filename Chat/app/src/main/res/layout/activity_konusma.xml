@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".KonusmaActivity">
+
+    <LinearLayout
+        android:layout_above="@id/relativeMesajGonder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+       >
+
+        <ListView
+            android:id="@+id/listView"
+            android:dividerHeight="0dp"
+            android:divider="@android:color/transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stackFromBottom="true"
+            android:transcriptMode="alwaysScroll"
+            android:padding="8dp"
+            />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeMesajGonder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:hint="Mesaj Yaz"
+            android:id="@+id/editMesaj"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/btnGonder"/>
+        <Button
+            android:id="@+id/btnGonder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GÖNDER"
+            android:layout_alignParentRight="true"/>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item android:id="@+id/navBtnInbox"
+        android:icon="@drawable/ic_email_black_24dp"
+        android:title="Sohbet"/>
+    <item android:id="@+id/navBtnProfil"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="Profil"/>
+    <item android:id="@+id/navBtnCikis"
+        android:icon="@drawable/ic_exit_to_app_black_24dp"
+        android:title="Çıkış"/>
+
+</menu>
