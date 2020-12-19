@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -133,7 +134,7 @@ public class KayitOlActivity extends AppCompatActivity {
                     public void onSuccess(Uri uri) {
                         String uid = firebaseAuth.getUid();
                         String ad = editAd.getText().toString();
-                        String url = uriPp.toString();
+                        String url = uri.toString();
                         databaseReference.child(Child.users).push().setValue(
                                 new UserInfo(uid, ad, url)
                         );

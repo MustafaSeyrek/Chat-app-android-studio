@@ -82,18 +82,15 @@ public class KonusmaActivity extends AppCompatActivity {
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         for(DataSnapshot snapshot1:snapshot.getChildren()){
                                             databaseReference.child(Child.CHAT_LAST).child(snapshot1.getKey()).child("mesajKey").setValue(mesajKey);
-
                                         }
-
                                     }
-
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError error) {
 
                                     }
                                 });
-
-                                databaseReference.child(Child.CHAT_INBOX).orderByChild("keyGelenKutusu").equalTo(gelenKutusu.getKeyGelenKutusu()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                databaseReference.child(Child.CHAT_INBOX).orderByChild("keyGelenKutusu")
+                                        .equalTo(gelenKutusu.getKeyGelenKutusu()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         for(DataSnapshot snapshot1:snapshot.getChildren()){
@@ -138,8 +135,6 @@ public class KonusmaActivity extends AppCompatActivity {
 
             }
         });
-
-        
     }
 
 
@@ -180,7 +175,8 @@ public class KonusmaActivity extends AppCompatActivity {
 
     }
     void chatLast() {
-        databaseReference.child(Child.CHAT_LAST).orderByChild("keyGelenKutusu").equalTo(gelenKutusu.getKeyGelenKutusu()).addChildEventListener(new ChildEventListener() {
+        databaseReference.child(Child.CHAT_LAST).orderByChild("keyGelenKutusu")
+                .equalTo(gelenKutusu.getKeyGelenKutusu()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 

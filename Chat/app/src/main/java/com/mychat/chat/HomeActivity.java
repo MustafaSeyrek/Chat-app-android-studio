@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -135,7 +136,6 @@ public class HomeActivity extends AppCompatActivity {
 
             textName.setText(list.get(position).getAd());
             Helper.imageLoad(HomeActivity.this,list.get(position).getUrlProfil(),circleImageView);
-
             return view;
         }
     }
