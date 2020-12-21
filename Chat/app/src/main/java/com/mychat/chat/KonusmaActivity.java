@@ -2,16 +2,20 @@ package com.mychat.chat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.Layout;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -28,11 +32,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class KonusmaActivity extends AppCompatActivity {
     LayoutInflater layoutInflater;
     Adapter adapter;
-
+    List<String> lk = new ArrayList<>();//keyleri tutuyor, mesaj silme işlemi için
     ArrayList<listItem> list = new ArrayList<>();
 
     FirebaseAuth firebaseAuth;
@@ -52,7 +57,7 @@ public class KonusmaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_konusma);
 
-        layoutInflater =(LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         listView = findViewById(R.id.listView);
         editMesaj = findViewById(R.id.editMesaj);
 
@@ -78,23 +83,24 @@ public class KonusmaActivity extends AppCompatActivity {
                                 final String mesajKey = ref.getKey();
                                 databaseReference.child(Child.CHAT_LAST).orderByChild("keyGelenKutusu").equalTo(gelenKutusu.getKeyGelenKutusu())
                                         .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        for(DataSnapshot snapshot1:snapshot.getChildren()){
-                                            databaseReference.child(Child.CHAT_LAST).child(snapshot1.getKey()).child("mesajKey").setValue(mesajKey);
-                                        }
-                                    }
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                                    databaseReference.child(Child.CHAT_LAST).child(snapshot1.getKey()).child("mesajKey").setValue(mesajKey);
+                                                }
+                                            }
 
-                                    }
-                                });
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+
+                                            }
+                                        });
                                 databaseReference.child(Child.CHAT_INBOX).orderByChild("keyGelenKutusu")
                                         .equalTo(gelenKutusu.getKeyGelenKutusu()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        for(DataSnapshot snapshot1:snapshot.getChildren()){
-                                            if(aliciUid.equals(snapshot1.child("gonderenUid").getValue().toString())){
+                                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                            if (aliciUid.equals(snapshot1.child("gonderenUid").getValue().toString())) {
                                                 databaseReference.child(Child.CHAT_INBOX).child(snapshot1.getKey()).child("okundu").setValue("1");
                                             }
                                         }
@@ -111,7 +117,7 @@ public class KonusmaActivity extends AppCompatActivity {
                 editMesaj.setText("");
             }
         });
-
+        removeMessage();
 
     }
 
@@ -155,6 +161,57 @@ public class KonusmaActivity extends AppCompatActivity {
 
     }
 
+    void removeMessage(){
+        // Gönderilen Mesajı silmek için tıklama
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                databaseReference.child(Child.CHATS).orderByChild("keyGelenKutusu").equalTo(gelenKutusu.getKeyGelenKutusu())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for(DataSnapshot snapshot1 : snapshot.getChildren()){
+                                    lk.add(snapshot1.getKey().toString());
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(KonusmaActivity.this);
+                builder.setTitle("Mesaj Silme İşlemi!");
+                builder.setMessage("Bu mesajı silmek istiyor musunuz?");
+                builder.setCancelable(false);
+                builder.setPositiveButton("Evet", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        if(!lk.isEmpty()) {
+                            databaseReference.child(Child.CHATS).child(lk.get(position).toString()).removeValue();
+                            lk.remove(position);
+                            list.remove(position);
+                            adapter.notifyDataSetChanged();
+                            Toast.makeText(KonusmaActivity.this, "Mesaj silindi!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                builder.setNegativeButton("Hayır", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(KonusmaActivity.this, "İşlem iptal edildi!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                lk.clear();
+            }
+
+        });
+    }
      void chats() {
         databaseReference.child(Child.CHATS).orderByChild("keyGelenKutusu").equalTo(gelenKutusu.getKeyGelenKutusu())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -163,6 +220,7 @@ public class KonusmaActivity extends AppCompatActivity {
                         for(DataSnapshot snapshot1 : snapshot.getChildren()){
                             Konusmalar konusmalar = snapshot1.getValue(Konusmalar.class);
                             list.add(new listItem(konusmalar.getGonderenUid(),konusmalar.getMesaj()));
+                            lk.add(snapshot1.getKey().toString());
                         }
                         adapter.notifyDataSetChanged();
                     }
@@ -172,6 +230,7 @@ public class KonusmaActivity extends AppCompatActivity {
 
                     }
                 });
+
 
     }
     void chatLast() {
@@ -248,11 +307,9 @@ public class KonusmaActivity extends AppCompatActivity {
             txtMesaj.setText(list.get(position).getMesaj());
             LinearLayout linearLayout = view.findViewById(R.id.linearTalk);
             LinearLayout linearLayout2 = view.findViewById(R.id.linearRow);
-            if(list.get(position).getGonderenUid().equals(gonderenUid)){
+            if(list.get(position).getGonderenUid().equals(gonderenUid)) {
                 linearLayout.setBackgroundResource(R.drawable.draw_talk_ben);
                 linearLayout2.setGravity(Gravity.RIGHT);
-
-
 
             }else{
                 linearLayout.setBackgroundResource(R.drawable.draw_talk_o);
