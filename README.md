@@ -1,2 +1,2 @@
 # Chat-app-android-studio
-Chat application that I applied by watching the training on Udemy. Data were kept with the Firebase real time database.
+The chat app I implemented by following the tutorial on Udemy. Data was kept with Firebase real-time database. What I did in addition to the course: Message deletion, user-friendly interface design, encrypted storage of messages in the database and decryption of messages while they are presented to the user.
